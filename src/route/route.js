@@ -1,10 +1,12 @@
-const express = require("express");
-const bookController = require("../controller/bookController");
-const userController = require ("../controller/userController")
-const router = express.Router();
+const express = require('express')
+const router = express.Router()  
+const userController = require("../controller/userController")
 
 
-//POST API 
-router.post("/books",bookController.createBooks);
 
-router.get("/books",bookController.getAllBooks);
+router.post("/register", userController.createUser)
+
+router.post("/login", userController.loginUser)
+
+
+module.exports = router  
