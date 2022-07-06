@@ -60,3 +60,22 @@ const createBooks = async function (req, res) {
     }
 }
 module.exports.createBooks = createBooks;
+
+const getAllBooks = async function (req, res) {
+        try {
+            let field = req.query;
+            let filter = {
+                ...field,
+                isDeleted: true
+            };
+    
+            const data = await bookModel.find(filter);
+            // console.log(data)
+            if (data.length == 0) return res.status(404).send({ status: false, msg: "No Book is found" });
+    
+            res.status(200).send({ status: true, data: data })
+        } catch (err) {
+            res.status(500).send({ status: false, msg: err.message });
+        }
+    };
+    module.exports.getAllBooks = getAllBooks;
