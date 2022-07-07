@@ -241,7 +241,7 @@ const getAllBooksById = async function (req, res) {
             const{title,excerpt,releasedAt,ISBN}=requestBody
             
             if (title !== undefined) {
-              if (!isValidType(title)) {
+              if (!isValid(title)) {
                 return res.status(400).send({
                   status: false,
                   message: "type must be string and required some data inside string",
@@ -258,7 +258,7 @@ const getAllBooksById = async function (req, res) {
             }
       
             if (ISBN !== undefined) {
-              if (!isValidType(ISBN)) {
+              if (!isValid(ISBN)) {
                 return res.status(400).send({
                   status: false,
                   message: "type must be string and required some data inside string",
@@ -284,7 +284,7 @@ const getAllBooksById = async function (req, res) {
       
       
             if (excerpt !== undefined) {
-              if (!isValidType(excerpt)) {
+              if (!isValid(excerpt)) {
                 return res.status(400).send({
                   status: false,
                   message: "type must be string and required some data inside string",
@@ -294,7 +294,7 @@ const getAllBooksById = async function (req, res) {
             }
       
             if (releasedAt !== undefined) {
-              if (!isValidType(releasedAt)) {
+              if (!isValid(releasedAt)) {
                 return res.status(400).send({
                   status: false,
                   message: "type must be string and required some data inside string",
@@ -343,6 +343,20 @@ const getAllBooksById = async function (req, res) {
         }
       }
       module.exports.updateBookDataById=updateBookDataById
+
+    //   const isValid = function (value) {
+    //     if (!value || typeof value != "string" || value.trim().length == 0) return false;
+    //     return true;
+    //   }
+      
+      const isValidRequestBody = function (requestBody) {
+        return Object.keys(requestBody).length > 0
+      }
+      
+      const isValidObjectId = function (objectId) {
+        return mongoose.Types.ObjectId.isValid(objectId)
+      }
+      
 
     const deleteBookBYId = async function (req, res) {
 

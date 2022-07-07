@@ -74,7 +74,7 @@ let authorization2=async function (req,res,next){
         if(!bookById){
             return res.status(400).send({status:false, message:"book with this bookId not found"})
         }
-        else if(decodedToken.userId !=bookById.userId){
+        else if(decodedToken.userId !=bookById.userId.toString()){
             return res.status(403).send({status:false,message:"you are Unauthorized for this"})
         }
         next();
