@@ -156,7 +156,7 @@ const updateReview = async (req, res) => {
     if (!isValidObject(paramreview)) {
       res.status(400).send({
         status: false,
-        message: "Book Id is not valid",
+        message: "review Id is not valid",
       });
     }
     const existReview = await reviewModel.findOne({
@@ -277,7 +277,7 @@ const deleteReview = async (req, res) => {
     if (!isValidObject(paramreview)) {
       res.status(400).send({
         status: false,
-        message: "Book Id is not valid",
+        message: "reviewId is not valid",
       });
     }
     const existReview = await reviewModel.findOne({
