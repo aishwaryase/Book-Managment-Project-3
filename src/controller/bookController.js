@@ -4,12 +4,12 @@ const userModel = require("../model/userModel")
 // ========================[Validations]==================================
 const isValid = function (value) {
     if( typeof value ==='undefined' || value === null ) {
-        console.log("1")
+        // console.log("1")
           return false
         }
 
     if( typeof value == 'string' && value.trim().length == 0 ) {
-      console.log("2")
+      // console.log("2")
         return false
     }
     if ( typeof value == 'string' && value.length !== value.trim().length ) {
