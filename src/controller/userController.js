@@ -43,7 +43,7 @@ const createUser = async function (req, res) {
         }
 
         //validate name
-        if (!/^[a-zA-Z.]+$/.test(name)) {
+        if (!/^[a-zA-Z .]+$/.test(name)) {
             return res.status(400).send({ status: false, message: `name contain only alphabets` })
         }
 
@@ -56,6 +56,9 @@ const createUser = async function (req, res) {
         if (!isValidPhone(phone.trim())) {
             return res.status(400).send({ status: false, msg: "mobile phone is not valid" })
         }
+         //check uniqueness of phone
+         if (await userModel.findOne({ phone: phone }))
+         return res.status(400).send({ msg: "Phone already exist" })
 
        //check email is present
         if (!email || !email.trim()) {
@@ -87,7 +90,7 @@ const createUser = async function (req, res) {
         obj.email = data.email.trim()
         obj.phone = data.phone.trim()
         obj.password = data.password.trim()
-        // obj.address = data.address.trim()
+        obj.address = data.address
 
         let savedData = await userModel.create(obj)
         return res.status(201).send({ status:true, msg: savedData })

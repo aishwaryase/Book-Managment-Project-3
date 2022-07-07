@@ -113,19 +113,10 @@ const createReview = async (req, res) => {
       const allRevies = await reviewModel.find({
         bookId: book,
         isDeleted: false,
-      });
+      }).select({_id:1, bookId:1, reviewedBy:1, reviewedAt:1, rating:1, review:1});
+      
       responData = {
-        _id: updateBookReview._id,
-        title: updateBookReview.title,
-        excerpt: updateBookReview.excerpt,
-        userId: updateBookReview.userId,
-        category: updateBookReview.category,
-        subcategory: updateBookReview.subcategory,
-        isDeleted: updateBookReview.isDeleted,
         reviews: updateBookReview.reviews,
-        releasedAt: updateBookReview.releasedAt,
-        createdAt: updateBookReview.createdAt,
-        updatedAt: updateBookReview.updatedAt,
         reviewsData: allRevies,
       };
       return res.status(200).send({
