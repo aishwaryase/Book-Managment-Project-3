@@ -1,12 +1,13 @@
 const userModel = require("../model/userModel");
 const jwt = require("jsonwebtoken");
-
+ 
 
 // validate phone number 
 const isValidPhone = (phone) => {
     let regEx = /^(\+\d{1,3}[- ]?)?\d{10}$/
     return regEx.test(phone)
 }
+
 
 //create user details
 const createUser = async function (req, res) {
@@ -58,7 +59,11 @@ const createUser = async function (req, res) {
         }
 
         //validate name
+<<<<<<< HEAD
         if (!/^([a-zA-Z. , ]){1,100}$/.test(name)) {
+=======
+        if (!/^[a-zA-Z .]+$/.test(name)) {
+>>>>>>> 4945727d13bf27c9d9b9a4c2653e22383f33cd9d
             return res.status(400).send({ status: false, message: `name contain only alphabets` })
         }
 
@@ -71,6 +76,9 @@ const createUser = async function (req, res) {
         if (!isValidPhone(phone.trim())) {
             return res.status(400).send({ status: false, msg: "mobile phone is not valid" })
         }
+         //check uniqueness of phone
+         if (await userModel.findOne({ phone: phone }))
+         return res.status(400).send({ msg: "Phone already exist" })
 
        //check email is present
         if (!email || !email.trim()) {
@@ -96,7 +104,17 @@ const createUser = async function (req, res) {
             return res.status(400).send({ status: false, message: `password shoud be minimum 8 to maximum 15 characters which contain at least one numeric digit, one uppercase and one lowercase letter` })
         } 
 
+<<<<<<< HEAD
 
+=======
+        //discard unwanted space in the name
+        obj.name = data.name.trim().split(" ").filter(word=>word).join(" ")
+        obj.title = data.title.trim()
+        obj.email = data.email.trim()
+        obj.phone = data.phone.trim()
+        obj.password = data.password.trim()
+        obj.address = data.address
+>>>>>>> 4945727d13bf27c9d9b9a4c2653e22383f33cd9d
 
         let savedData = await userModel.create(obj)
         console.log(obj)
