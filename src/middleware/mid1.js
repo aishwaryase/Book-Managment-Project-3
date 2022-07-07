@@ -10,23 +10,13 @@ const authentication = async function (req,res,next){
 
         if(!token) return res.status(400).send({status:false, message:"token must be present in header"});
 
-<<<<<<< HEAD
-        try{let decodedToken = jwt.verify(token,"ProjectBookMgmt");
-=======
-        try{
-            let decodedToken = jwt.verify(token,"ProjectBookMgmt");
->>>>>>> 4945727d13bf27c9d9b9a4c2653e22383f33cd9d
+        try{let decodedToken = jwt.verify(token,"ProjectBookMgmt",{ignoreExpiration: true});
         let iat=decodedToken.iat
         let exp=decodedToken.exp
-        if(exp<iat){
+        if(iat<exp){
             return res.status(401).send({status:false, message:"session expired, please Login again"})
         }
-<<<<<<< HEAD
         req.decodedToken=decodedToken;}catch(err){
-=======
-        req.decodedToken=decodedToken;
-    }catch(err){
->>>>>>> 4945727d13bf27c9d9b9a4c2653e22383f33cd9d
             return res.status(401).send({status:false,message:"token is invalid"})
         }
         next() 
@@ -60,9 +50,6 @@ let authorization1=async function (req,res,next){
         return res.status(500).send({status:false, message:err.message})
     }
 }
-
-
-
 
 
 //authorization

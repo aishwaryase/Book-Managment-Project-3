@@ -59,11 +59,7 @@ const createUser = async function (req, res) {
         }
 
         //validate name
-<<<<<<< HEAD
         if (!/^([a-zA-Z. , ]){1,100}$/.test(name)) {
-=======
-        if (!/^[a-zA-Z .]+$/.test(name)) {
->>>>>>> 4945727d13bf27c9d9b9a4c2653e22383f33cd9d
             return res.status(400).send({ status: false, message: `name contain only alphabets` })
         }
 
@@ -104,20 +100,9 @@ const createUser = async function (req, res) {
             return res.status(400).send({ status: false, message: `password shoud be minimum 8 to maximum 15 characters which contain at least one numeric digit, one uppercase and one lowercase letter` })
         } 
 
-<<<<<<< HEAD
-
-=======
-        //discard unwanted space in the name
-        obj.name = data.name.trim().split(" ").filter(word=>word).join(" ")
-        obj.title = data.title.trim()
-        obj.email = data.email.trim()
-        obj.phone = data.phone.trim()
-        obj.password = data.password.trim()
-        obj.address = data.address
->>>>>>> 4945727d13bf27c9d9b9a4c2653e22383f33cd9d
 
         let savedData = await userModel.create(obj)
-        console.log(obj)
+    
         return res.status(201).send({ status:true, message: 'Success', data: savedData })
 
     }
@@ -145,8 +130,8 @@ const loginUser = async function (req, res) {
  
     
     var d = new Date();
-    //calculate exp of 24 hrs.
-    var calculatedExpiresIn = (((d.getTime()) + (24 * 60 * 60 * 1000))-(d.getTime() - d.getMilliseconds())/1000);
+    //calculate exp of 1 hrs.
+    var calculatedExpiresIn = (((d.getTime()) + (60 * 60 * 1000))-(d.getTime() - d.getMilliseconds())/1000);
     
      //token created here
         var token = jwt.sign(
