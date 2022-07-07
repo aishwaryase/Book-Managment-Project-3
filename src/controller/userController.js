@@ -1,12 +1,13 @@
 const userModel = require("../model/userModel");
 const jwt = require("jsonwebtoken");
-
+ 
 
 // validate phone number 
 const isValidPhone = (phone) => {
     let regEx = /^(\+\d{1,3}[- ]?)?\d{10}$/
     return regEx.test(phone)
 }
+
 
 //create user details
 const createUser = async function (req, res) {
@@ -86,7 +87,7 @@ const createUser = async function (req, res) {
         obj.email = data.email.trim()
         obj.phone = data.phone.trim()
         obj.password = data.password.trim()
-        obj.address = data.address.trim()
+        // obj.address = data.address.trim()
 
         let savedData = await userModel.create(obj)
         return res.status(201).send({ status:true, msg: savedData })
