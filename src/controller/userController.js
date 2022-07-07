@@ -12,9 +12,25 @@ const isValidPhone = (phone) => {
 const createUser = async function (req, res) {
     try {
         const data = req.body
+       let street1 = data.address.street
+        let pincode1 = data.address.pincode
+        let city1 = data.address.city
+
         let obj={}
-        let { title, name, phone, email, password, address } = data //destructure
+        let { title, name, phone, email, password, address} = data //destructure
         
+        
+        //discard unwanted space between string
+        obj.name = data.name.trim().split(" ").filter(word=>word).join(" ")
+        obj.title = data.title.trim()
+        obj.email = data.email.trim()
+        obj.phone = data.phone.trim()
+        obj.password = data.password.trim()
+        obj.address = data.address
+        obj['address'['street']] = street1.trim().split(" ").filter(word=>word).join(" ")
+        obj['address'['pincode']] = pincode1.trim()
+        obj['address'['city']] = city1.trim().split(" ").filter(word=>word).join(" ")
+
         //check data is exist | key exist in data
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, msg: "Data is required to add a user" })
@@ -42,7 +58,7 @@ const createUser = async function (req, res) {
         }
 
         //validate name
-        if (!/^[a-zA-Z.]+$/.test(name)) {
+        if (!/^([a-zA-Z. , ]){1,100}$/.test(name)) {
             return res.status(400).send({ status: false, message: `name contain only alphabets` })
         }
 
@@ -80,16 +96,11 @@ const createUser = async function (req, res) {
             return res.status(400).send({ status: false, message: `password shoud be minimum 8 to maximum 15 characters which contain at least one numeric digit, one uppercase and one lowercase letter` })
         } 
 
-        //discard unwanted space in the name
-        obj.name = data.name.trim().split(" ").filter(word=>word).join(" ")
-        obj.title = data.title.trim()
-        obj.email = data.email.trim()
-        obj.phone = data.phone.trim()
-        obj.password = data.password.trim()
-        obj.address = data.address.trim()
+
 
         let savedData = await userModel.create(obj)
-        return res.status(201).send({ status:true, msg: savedData })
+        console.log(obj)
+        return res.status(201).send({ status:true, message: 'Success', data: savedData })
 
     }
     catch (err) {
@@ -112,23 +123,28 @@ const loginUser = async function (req, res) {
      //email and password check from db
      let user = await userModel.findOne({ email: userName, password: password });
      if (!user)
-         return res.status(400).send({ status: false, msg: "email or the password is not correct" });
+         return res.status(401).send({ status: false, msg: "email or the password is not correct" });
  
+    
+    var d = new Date();
+    //calculate exp of 24 hrs.
+    var calculatedExpiresIn = (((d.getTime()) + (24 * 60 * 60 * 1000))-(d.getTime() - d.getMilliseconds())/1000);
+    
      //token created here
-     let token = jwt.sign(
-         {
-             userId: user._id.toString(),
-             batch: "batch-2",
-             organisation: "Project3",
-         },
-         "ProjectBookMgmt"
-     );
-     
-     return res.status(201).send({ status: true, token: token });
+        var token = jwt.sign(
+            {
+                "userId": user._id, 
+                "iat": new Date().getTime(),
+                "exp": calculatedExpiresIn 
+            },
+            "ProjectBookMgmt"
+                );
+     res.setHeader("x-api-key", token);
+     return res.status(201).send({ status: true, token: token});
  }
  catch (err) {
      console.log(err.message)
-     res.status(500).send({ msg: err.message })
+     res.status(500).send({status: false, msg: err.message })
  }
      
  };
