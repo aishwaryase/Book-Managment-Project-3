@@ -18,7 +18,7 @@
   password: {string, mandatory, minLen 8, maxLen 15},
   address: {
     street: {string},
-    city: {string},
+    city: {string},  
     pincode: {string}
   },
   createdAt: {timestamp},

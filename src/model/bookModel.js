@@ -1,5 +1,5 @@
-
 const mongoose = require("mongoose")
+const ObjectId = mongoose.Schema.Types.ObjectId
 
 const bookSchema = new mongoose.Schema({
 
@@ -16,7 +16,7 @@ const bookSchema = new mongoose.Schema({
         trim: true
     }, 
     userId: {
-        type: mongoose.Types.ObjectId,
+        type: ObjectId,
         required: true,
         ref: 'user'
     },

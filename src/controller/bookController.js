@@ -2,6 +2,7 @@ const bookModel = require("../model/bookModel")
 const userModel = require("../model/userModel")
 const reviewModel = require("../model/reviewModel")
 const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId
 
 
 // ========================[Validations]==================================
@@ -76,6 +77,14 @@ const createBooks = async function (req, res) {
                .status(400)
                .send({ status: false, msg: "ISBN field is mandatory" });
           }
+          const regiexISBN=/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/
+                if(!regiexISBN.test(ISBN)){
+                  return res.status(400).send({
+                    status: false,
+                    message: "ISBN is not valid its length shout be 10 or 13",
+                  });
+          }
+
         let duplicateISBN = await bookModel.findOne({ ISBN: ISBN });
           if (duplicateISBN) {
              return res.status(400).send({ status: false, msg: "This ISBN is Already Exist." });
@@ -127,7 +136,7 @@ const getAllBooks = async function (req, res) {
             // if (Object.keys(field).length == 0)
             //  return res.status(400).send({ status: false, msg: 'Query param should  be not Empty..' })
             if(userId !== undefined){
-                if(!mongoose.Types.ObjectId.isValid(userId)){
+                if(!ObjectId.isValid(userId)){
                     return res.status(400).send({status:false, message :"UserId is not valid"})
                  }
             }
@@ -178,7 +187,7 @@ const getAllBooksById = async function (req, res) {
     try {
         let Books = req.params.bookId;
 
-        if(!mongoose.Types.ObjectId.isValid(Books)){
+        if(!ObjectId.isValid(Books)){
            return res.status(400).send({status:false, message :"BookId is not valid"})
         }
         
@@ -200,7 +209,7 @@ const getAllBooksById = async function (req, res) {
             userId: result.userId,
             category: result.category,
             subcategory: result.subcategory,
-            isDeleted: result.isDeleted,
+            isDeleted: result.isDeleted, 
             reviews: result.reviews,
             releasedAt: result.releasedAt,
             createdAt: result.createdAt,
@@ -216,26 +225,26 @@ const getAllBooksById = async function (req, res) {
     module.exports.getAllBooksById = getAllBooksById;
 
 
-    const updateBookDataById=async function (req,res) {
+    const updateBookDataById = async function (req,res) {
         try{
             const paramsBookId = req.params.bookId;
             const filteredData = {};
       
-            if (!mongoose.Types.ObjectId.isValid(paramsBookId)) {
+            if (!ObjectId.isValid(paramsBookId)) {
             res.status(400).send({
                 status: false,
                 message: "Book Id is not valid",
             });
             }
       
-            const existBook=await bookModel.findOne({_id:paramsBookId,isDeleted:false})
+            const existBook=await bookModel.findOne({_id:paramsBookId, isDeleted:false})
             if(!existBook){
               return res.status(404).send({
                 status: false,
                 message: "No book found with given Id",
               });
             } 
-            const requestBody=req.body
+            const requestBody = req.body
       
             if(Object.keys(requestBody).length===0){
               return res.status(400).send({
@@ -243,7 +252,7 @@ const getAllBooksById = async function (req, res) {
                 message: "Update request rejected no get from body",
               });
             }
-            const{title,excerpt,releasedAt,ISBN}=requestBody
+            const{title,excerpt,releasedAt,ISBN} = requestBody
             
             if (title !== undefined) {
               if (!isValid(title)) {
@@ -305,10 +314,7 @@ const getAllBooksById = async function (req, res) {
                   message: "type must be string and required some data inside string",
                 });
               }
-              // function yearValid(data) {
-              //   
-              //   return regEx.t
-              // }
+            
               var regEx = /^\d{4}-\d{2}-\d{2}$/;
       
               if(!(regEx.test(releasedAt))){
@@ -320,7 +326,7 @@ const getAllBooksById = async function (req, res) {
               filteredData["releasedAt"] = releasedAt.trim();
             }
       
-            const updateBook=await bookModel.findByIdAndUpdate({_id:existBook._id},{$set:filteredData},{new:true})
+            const updateBook = await bookModel.findByIdAndUpdate({_id:existBook._id},{$set:filteredData},{new:true})
             const allRevies = await reviewModel.find({
               bookId:existBook._id ,
               isDeleted: false,
@@ -355,7 +361,7 @@ const getAllBooksById = async function (req, res) {
       }
       
       const isValidObjectId = function (objectId) {
-        return mongoose.Types.ObjectId.isValid(objectId)
+        return ObjectId.isValid(objectId)
       }
       
 

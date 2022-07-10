@@ -1,16 +1,17 @@
 const reviewModel = require("../model/reviewModel");
 const bookModel = require("../model/bookModel");
 const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId
 
 function isValidObject(obj) {
-  return mongoose.Types.ObjectId.isValid(obj);
+  return ObjectId.isValid(obj);
 }
 
 function isValidBody(reqbody) {
   return Object.keys(reqbody).length> 0;
 }
 
-const isValid = function (value) {
+const isValid = function (value) { 
   if (typeof value === "undefined" || value === null) {
     return false;
   }
@@ -293,7 +294,7 @@ const deleteReview = async (req, res) => {
 
     const delReview = await reviewModel.findByIdAndUpdate(
       { _id: existReview._id },
-      { $set: { isDeleted: false } }
+      { $set: { isDeleted: true } }
     );
     if (delReview) {
       const updateBookReview = await bookModel.findOneAndUpdate(
