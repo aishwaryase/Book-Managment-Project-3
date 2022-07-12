@@ -29,19 +29,23 @@ let authorization1=async function (req,res,next){
     try{
         let userId=req.body.userId
         const decodedToken=req.decodedToken
+        let data = req.body
+        if (Object.keys(data).length == 0) {
+            return res.status(400).send({ status: false, msg: "Body should  be not Empty.. " })
+        }
 
         if(!userId){
             return res.status(400).send({status:false, message:"userId must present"})
         } 
-        else if(mongoose.Types.ObjectId.isValid(userId)==false){
+        else if(mongoose.Types.ObjectId.isValid(userId) == false){
             return res.status(400).send({status:false, message:"userId is invalid"})
         }
-        let userById=await userModel.findOne({_id:userId})
+        let userById = await userModel.findOne({_id:userId})
 
         if(!userById){
             return res.status(400).send({status:false, message:"user with this userId not found"})
         }
-        else if(decodedToken.userId !=userById._id){
+        else if(decodedToken.userId != userById._id){
             return res.status(403).send({status:false,message:"you are Unauthorized for this"})
         }
         next();
@@ -61,15 +65,15 @@ let authorization2=async function (req,res,next){
         if(!bookId){
             return res.status(400).send({status:false, message:"bookId must present"})
         } 
-        else if(mongoose.Types.ObjectId.isValid(bookId)==false){
+        else if(mongoose.Types.ObjectId.isValid(bookId) == false){
             return res.status(400).send({status:false, message:"bookId is invalid"})
         }
-        let bookById=await bookModel.findOne({_id:bookId,isDeleted:false})
+        let bookById = await bookModel.findOne({_id:bookId,isDeleted:false})
 
         if(!bookById){
             return res.status(400).send({status:false, message:"book with this bookId not found"})
         }
-        else if(decodedToken.userId !=bookById.userId.toString()){
+        else if(decodedToken.userId != bookById.userId.toString()){
             return res.status(403).send({status:false,message:"you are Unauthorized for this"})
         }
         next();
