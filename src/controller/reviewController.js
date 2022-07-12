@@ -80,7 +80,7 @@ const createReview = async function(req, res)  {
       filteredData["review"] = review.trim().split(' ').filter(a=>a).join(' ');
     }
 
-    filteredData["reviewedAt"] = new Date().toISOString().slice(0, 10)  //Date();
+    filteredData["reviewedAt"] = new Date() //Date();
 
     const createdreviews = await reviewModel.create(filteredData);
     const findCreRev=await reviewModel.findById(createdreviews._id).select({_id:1, bookId:1, reviewedBy:1, reviewedAt:1, rating:1, review:1})
