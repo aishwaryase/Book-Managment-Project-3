@@ -9,26 +9,30 @@ const reviewSchema = new mongoose.Schema(
       required: true,
     },
     reviewedBy: {
-      type: String,
-      default: "Guest",
-    },
-    reviewedAt: {
-      type: Date,
-      required: true,
-    },
-    rating: {
-      type: Number,
-      required: true,
-    },
-    review: {
-      type: String,
-    },
-    isDeleted: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  { timestamps: true }
-);
+    type:String,
+    default: 'Guest',
+    required:true,
+    trim:true
+},
+reviewedAt:{
+    type: Date,
+    required: true,
+    trim:true
+},
+rating:{
+    type: Number,
+    required: true,
+    min: 1,
+    max: 5
+}, 
+review:{
+    type:String,
+    trim:true
+},
+isDeleted: {
+    type:Boolean, 
+    default: false
+},
+},{timestamps:true})
 
-module.exports = mongoose.model("review", reviewSchema);
+module.exports = mongoose.model("review", reviewSchema)

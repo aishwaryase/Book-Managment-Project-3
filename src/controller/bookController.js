@@ -19,11 +19,10 @@ const createBooks = async function (req, res) {
         }
 
         //check the title is empty
-        if(!title ||typeof title !=='string' || title.trim().length==0 ) {
+        if(!title ||typeof title !=='string' || title.trim().length==0 )
+        {
             return res.status(400).send({ status: false, message: "title is required and is of string type" })
         }
-        //remove spaces
-        data.title = title.trim().split(" ").filter(word=>word).join(" ")
 
         //check the title be unique
         let duplicateTitle = await bookModel.findOne({ title: title });
@@ -35,8 +34,6 @@ const createBooks = async function (req, res) {
         if(!excerpt ||typeof excerpt !=='string' || excerpt.trim().length==0 ){ 
             return res.status(400).send({ status: false, message: "Excerpt field is mandatory" });
           }
-          //remove spaces
-          data.excerpt = excerpt.trim().split(" ").filter(word=>word).join(" ")
 
         //check the userId is empty
         if(!userId ||typeof userId !=='string' || userId.trim().length==0){ 
@@ -64,8 +61,6 @@ const createBooks = async function (req, res) {
         if(!category ||typeof category !=='string' || category.trim().length==0){ 
           return res.status(400).send({ status: false, message: "category field is mandatory" });
           }
-          //remove spaces
-          data.category= category.trim().split(" ").filter(word=>word).join(" ")
 
           //check the subcategory is present
           if (!subcategory) {
@@ -76,7 +71,9 @@ const createBooks = async function (req, res) {
           if (!Array.isArray(subcategory)) {
             return res.status(400).send({ status: false, message: "Subcategory must be an array of String" })
           }
-      
+          if(subcategory.length === 0){
+            return res.status(400).send({ status: false, message: "can not be an empty array " })
+          }
           let validSubcategory = true;
       
           const checkTypeofSubcategory = subcategory.map(x => {
@@ -104,6 +101,15 @@ const createBooks = async function (req, res) {
 
         if (!FindId) return res.status(400).send({ status: false, message: 'UserId does not exist' })
 
+        //remove spaces
+        if(data.excerpt !== undefined){
+                data.excerpt = excerpt.trim().split(" ").filter(word=>word).join(" ")
+           }
+       
+            data.title = title.toLowerCase().trim().split(" ").filter(word=>word).join(" ")
+            data.category= category.trim().split(" ").filter(word=>word).join(" ")
+           
+      
         //create book with data
         const bookCreated = await bookModel.create(data)
 
@@ -153,18 +159,27 @@ const getAllBooks = async function (req, res) {
       }
   
       //check the category value is present
-    if (category == 0||null)
-      return res.status(400).send({ status: false, message: 'category should  be present' })
+    
+    if (category !== undefined) {
+      if (category.length===0){
+        return res.status(400).send({ status: false, message: "category should  be present" })
+        }
+    }
 
       //check the subcategory value is present
-    if (subcategory == 0||null)
-      return res.status(400).send({ status: false, message: 'subcategory should  be present' })
+   
+    if (subcategory !== undefined) {
+      if (subcategory.length===0){
+        return res.status(400).send({ status: false, message: "subcategory should  be present" })
+        }
+    }
 
     let filter = {
       ...field,
       isDeleted: false
     };
-   // book _id, title, excerpt, userId, category, releasedAt, reviews 
+   
+    // get these field from bookModel book _id, title, excerpt, userId, category, releasedAt, reviews 
     const Getbooks = await bookModel.find(filter)
       .select({ title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 });
 
@@ -385,3 +400,4 @@ module.exports.getAllBooks = getAllBooks;
 module.exports.getAllBooksById = getAllBooksById;
 module.exports.updateBookDataById=updateBookDataById
 module.exports.deleteBookBYId = deleteBookBYId;
+

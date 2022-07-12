@@ -5,25 +5,21 @@ const userController = require("../controller/userController")
 const reviewController=require('../controller/reviewController')
 const middleware = require("../middleware/mid1")
 
-router.post("/register", userController.createUser)
+//User Api's
+router.post("/register", userController.createUser)//create user
+router.post("/login", userController.loginUser)//login user
 
-router.post("/login", userController.loginUser)
+//Book Api's
+router.post("/books",middleware.authentication,middleware.authorization1, bookController.createBooks)//create book
+router.get("/books",middleware.authentication, bookController.getAllBooks)//get book
+router.get("/books/:bookId",middleware.authentication, bookController.getAllBooksById)//get book by Id
+router.put("/books/:bookId",middleware.authentication,middleware.authorization2, bookController.updateBookDataById)// update book by id
+router.delete("/books/:bookId",middleware.authentication,middleware.authorization2, bookController.deleteBookBYId)//deleted book by Id
 
-router.post("/books",middleware.authentication,middleware.authorization1, bookController.createBooks)
-
-router.get("/books", bookController.getAllBooks)
-
-router.get("/books/:bookId", bookController.getAllBooksById)
-
-router.delete("/books/:bookId",middleware.authentication,middleware.authorization2, bookController.deleteBookBYId)
-
-router.put("/books/:bookId",middleware.authentication,middleware.authorization2, bookController.updateBookDataById)
-
-router.post("/books/:bookId/review", reviewController.createReview)
-
-router.put('/books/:bookId/review/:reviewId', reviewController.updateReview)
-
-router.delete('/books/:bookId/review/:reviewId', reviewController.deleteReview)
+//Review Api's
+router.post("/books/:bookId/review", reviewController.createReview) //create review
+router.put('/books/:bookId/review/:reviewId', reviewController.updateReview) //update review
+router.delete('/books/:bookId/review/:reviewId', reviewController.deleteReview)//delete review
 
 
 module.exports = router  

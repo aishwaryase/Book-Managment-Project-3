@@ -158,16 +158,17 @@ const loginUser = async function (req, res) {
          return res.status(401).send({ status: false, message: "credentials are not correct" });
  
     
-    var d = new Date();
-    //calculate exp of 1 hrs.
-    var calculatedExpiresIn = (((d.getTime()) + (60 * 60 * 1000))-(d.getTime() - d.getMilliseconds())/1000);
+    // var d = new Date();
+    // //calculate exp of 1 hrs.
+    // var calculatedExpiresIn = (((d.getTime()) + (60 * 60 * 1000))-(d.getTime() - d.getMilliseconds())/1000);
     
      //token created here
         var token = jwt.sign(
             {
-                "userId": user._id, 
+               "userId": user._id,
                 "iat": new Date().getTime(),
-                "exp": calculatedExpiresIn 
+                "exp": Math.floor(Date.now() / 1000)+ 10*60*60
+
             },
             "ProjectBookMgmt"
                 );
