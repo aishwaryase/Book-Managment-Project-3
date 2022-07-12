@@ -141,7 +141,7 @@ const loginUser = async function (req, res) {
      
      //check data is exist | key exist in data
      if (Object.keys(data).length == 0) {
-        return res.status(400).send({ status: false, msg: "Data is required to login" })
+        return res.status(400).send({ status: false, message: "Data is required to login" })
     }
 
      //email is required
@@ -173,7 +173,7 @@ const loginUser = async function (req, res) {
             "ProjectBookMgmt"
                 );
      res.setHeader("x-api-key", token);
-     return res.status(201).send({ status: true, token: token});
+     return res.status(201).send({ status: true, message:"success" , data: token});
  }
  catch (err) {
      console.log(err.message)
