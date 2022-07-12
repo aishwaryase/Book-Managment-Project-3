@@ -2,6 +2,7 @@ const jwt=require('jsonwebtoken')
 const bookModel=require('../model/bookModel')
 const userModel=require('../model/userModel')
 const mongoose=require('mongoose')
+
 //authentication
 const authentication = async function (req,res,next){
     try{
@@ -10,25 +11,27 @@ const authentication = async function (req,res,next){
 
         if(!token) return res.status(400).send({status:false, message:"token must be present in header"});
 
-        try{let decodedToken = jwt.verify(token,"ProjectBookMgmt",{ignoreExpiration: true});
-        let iat=decodedToken.iat
-        let exp=decodedToken.exp
-        if(iat<exp){
-            return res.status(401).send({status:false, message:"session expired, please Login again"})
-        }
+        try{let decodedToken = jwt.verify(token,"ProjectBookMgmt"); 
+       
         req.decodedToken=decodedToken;}catch(err){
-            return res.status(401).send({status:false,message:"token is invalid"})
+            return res.status(401).send({status:false,data: err.message, message:"token is invalid"})
         }
         next() 
     }
     catch(err){
         return res.status(500).send({status:false, message:err.message})
     }
-}
+} 
+//authorization for create book
 let authorization1=async function (req,res,next){
     try{
         let userId=req.body.userId
         const decodedToken=req.decodedToken
+let data = req.body
+         //check data is exist | key exist in data
+         if (Object.keys(data).length == 0) {
+            return res.status(400).send({ status: false, msg: "Data is required to add a user" })
+        }
 
         if(!userId){
             return res.status(400).send({status:false, message:"userId must present"})
@@ -36,7 +39,7 @@ let authorization1=async function (req,res,next){
         else if(mongoose.Types.ObjectId.isValid(userId)==false){
             return res.status(400).send({status:false, message:"userId is invalid"})
         }
-        let userById=await userModel.findOne({_id:userId})
+        let userById=await userModel.findOne({_id:userId,isDeleted:false})
 
         if(!userById){
             return res.status(400).send({status:false, message:"user with this userId not found"})
