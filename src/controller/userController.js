@@ -14,14 +14,14 @@ const createUser = async function (req, res) {
     
         //check data is exist | key exist in data
         if (Object.keys(data).length == 0) {
-            return res.status(400).send({ status: false, msg: "Data is required to add a user" })
+            return res.status(400).send({ status: false, message: "Data is required to add a user" })
         }
 
         //check title is present 
        
         if(!title ||typeof title !=='string' || title.trim().length==0 )
         {
-            return res.status(400).send({ status: false, msg: "title is required and is of string type" })
+            return res.status(400).send({ status: false, message: "title is required and is of string type" })
         }
 
         //validate title enum
