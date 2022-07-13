@@ -102,19 +102,19 @@ const createBooks = async function (req, res) {
         if (!FindId) return res.status(400).send({ status: false, message: 'UserId does not exist' })
 
         //remove spaces
-        if(data.excerpt !== undefined){
-                data.excerpt = excerpt.trim().split(" ").filter(word=>word).join(" ")
-           }
+        // if(data.excerpt !== undefined){
+        //         data.excerpt = excerpt.trim().split(" ").filter(word=>word).join(" ")
+        //    }
        
-            data.title = title.toLowerCase().trim().split(" ").filter(word=>word).join(" ")
-            data.category= category.trim().split(" ").filter(word=>word).join(" ")
+        //     data.title = title.toLowerCase().trim().split(" ").filter(word=>word).join(" ")
+        //     data.category= category.trim().split(" ").filter(word=>word).join(" ")
            
       
         //create book with data
         const bookCreated = await bookModel.create(data)
 
         //releasedAt formatting
-        const releasedAt1= new Date(data.releasedAt).toISOString().slice(0,10)
+        // const releasedAt1= new Date(data.releasedAt).toISOString().slice(0,10)
 
         let obj={
           _id: bookCreated._id,
@@ -148,11 +148,12 @@ const getAllBooks = async function (req, res) {
     const { userId, category, subcategory } = field //destructure
 
     //check userId
-    if (userId === 0||null)
-      return res.status(400).send({ status: false, message: "UserId should  be present" })
-
+      
       //check the userId is valid
       if (userId !== undefined) {
+        if (userId.length===0){
+          return res.status(400).send({ status: false, message: "UserId should  be present" })
+          }
         if (!mongoose.Types.ObjectId.isValid(userId)) {
           return res.status(400).send({ status: false, message: "UserId is not valid" })
         }
@@ -400,4 +401,3 @@ module.exports.getAllBooks = getAllBooks;
 module.exports.getAllBooksById = getAllBooksById;
 module.exports.updateBookDataById=updateBookDataById
 module.exports.deleteBookBYId = deleteBookBYId;
-

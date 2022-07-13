@@ -53,16 +53,8 @@ const createReview = async function(req, res)  {
       if (!isValidType(reviewedBy)) {
         return res.status(400).send({status: false,message: "type must be string and required some data inside string"});
       }
-<<<<<<< HEAD
-      if(!/^([a-z A-Z. , ]){1,100}$/.test(reviewedBy)){
-        return res.status(400).send({
-          status: false,
-          message: "reviewedBy should be in alphabets",
-      })}
-=======
       if(!/^([a-zA-Z. , ]){1,100}$/.test(reviewedBy)){
         return res.status(400).send({status: false,message: "reviewedBy should be in alphabets"})}
->>>>>>> eae4d00b5e17f0d7ffaa2a038323d6efa9cd55b4
 
       filteredData["reviewedBy"] = reviewedBy.trim().split(' ').filter(a=>a).join(' ');
     }
@@ -84,41 +76,15 @@ const createReview = async function(req, res)  {
     filteredData["rating"] = rating;
 
     if (review !== undefined) {
-<<<<<<< HEAD
-      if (!isValidType(review) || review.trim().length === 0 
-      ) {
-        return res.status(400).send({
-          status: false,
-          message: "type must be string and required some data inside string",
-        });
-      }
-=======
       if (!isValidType(review) ||review.trim().length === 0) {
         return res.status(400).send({status: false,message: "type must be string and required some data inside string"});}
->>>>>>> eae4d00b5e17f0d7ffaa2a038323d6efa9cd55b4
       filteredData["review"] = review.trim().split(' ').filter(a=>a).join(' ');
     }
 
-    filteredData["reviewedAt"] = new Date().toISOString().slice(0, 10)  //Date();
+    filteredData["reviewedAt"] = new Date() //Date();
 
     const createdreviews = await reviewModel.create(filteredData);
     const findCreRev=await reviewModel.findById(createdreviews._id).select({_id:1, bookId:1, reviewedBy:1, reviewedAt:1, rating:1, review:1})
-<<<<<<< HEAD
-    if (findCreRev) {
-      const updateBookReview = await bookModel.findOneAndUpdate(
-        { _id: createdreviews.bookId, isDeleted: false },
-        { $inc: { reviews: 1 } },
-        { new: true }
-      ).lean();
-  
-      updateBookReview.responData=findCreRev
-  
-      return res.status(201).send({
-        status: true,
-        message: "Success",
-        data: updateBookReview,
-      });
-=======
    
     if (findCreRev) {
       const updateBookReview = await bookModel.findOneAndUpdate(
@@ -127,7 +93,6 @@ const createReview = async function(req, res)  {
       updateBookReview.responData=findCreRev
       
       return res.status(201).send({status: true,message: "Success",data: updateBookReview});
->>>>>>> eae4d00b5e17f0d7ffaa2a038323d6efa9cd55b4
     }
   } catch (error) {
     return res.status(500).send({status: false,message: error.message});
@@ -142,42 +107,14 @@ const updateReview = async function(req, res) {
 
     const book = req.params.bookId;
     if (!isValidObject(book)) {
-<<<<<<< HEAD
-      res.status(400).send({
-        status: false,
-        message: "Book Id is not valid",
-      });
-    }
-=======
       return res.status(400).send({status: false,message: "Book Id is not valid"});}
 
->>>>>>> eae4d00b5e17f0d7ffaa2a038323d6efa9cd55b4
     const existBook = await bookModel.findOne({ _id: book, isDeleted: false }).lean();
     if (!existBook) {
       return res.status(404).send({status: false,message: "No data found"});}
 
     const paramreview = req.params.reviewId;
     if (!isValidObject(paramreview)) {
-<<<<<<< HEAD
-      res.status(400).send({
-        status: false,
-        message: "review Id is not valid",
-      });
-    }
-    const existReview = await reviewModel.findOne({
-      _id: paramreview,
-      bookId:existBook._id,
-      isDeleted: false,
-    });
-    if (!existReview) {
-      return res.status(404).send({
-        status: false,
-        message: "No data found",
-      });
-    }
-    const requestBody = req.body;
-    
-=======
      return  res.status(400).send({status: false,message: "review Id is not valid"});}
 
     const existReview = await reviewModel.findOne({_id: paramreview,bookId:existBook._id,isDeleted: false});
@@ -186,34 +123,17 @@ const updateReview = async function(req, res) {
     return res.status(404).send({status: false,message: "No data found"});}
 
     const requestBody = req.body;
->>>>>>> eae4d00b5e17f0d7ffaa2a038323d6efa9cd55b4
     if (!isValidBody(requestBody)) {
     return res.status(400).send({status: false,message: "required some mandatory data"});}
 
     const { review, rating, reviewedBy } = requestBody;
     
-<<<<<<< HEAD
-
-    if (reviewedBy !== undefined) {
-      if (!isValidType(reviewedBy)) {
-        return res.status(400).send({
-          status: false,
-          message: "type must be string and required some data inside string",
-        });
-      }
-      if(!/^([a-zA-Z. , ]){1,100}$/.test(reviewedBy)){
-        return res.status(400).send({
-          status: false,
-          message: "reviewedBy should be in alphabets",
-      })}
-=======
     if (reviewedBy !== undefined) {
       if (!isValidType(reviewedBy)) {
         return res.status(400).send({status: false,message: "type must be string and required some data inside string"});}
 
       if(!/^([a-zA-Z. , ]){1,100}$/.test(reviewedBy)){
         return res.status(400).send({status: false,message: "reviewedBy should be in alphabets"})}
->>>>>>> eae4d00b5e17f0d7ffaa2a038323d6efa9cd55b4
 
       filteredData["reviewedBy"] = reviewedBy.trim().split(' ').filter(a=>a).join(' ');
     }
@@ -235,24 +155,6 @@ const updateReview = async function(req, res) {
       filteredData["review"] = review.trim().split(' ').filter(a=>a).join(' ');
     }
 
-<<<<<<< HEAD
-    const updateReview = await reviewModel.findByIdAndUpdate(
-      { _id: paramreview },
-      { $set: filteredData },
-      { new: true }
-    ).select({_id:1, bookId:1, reviewedBy:1, reviewedAt:1, rating:1, review:1});
-
-    if (updateReview) {
-      existBook.responData = updateReview
-
-      return res.status(200).send({status: true,message: "Success",data: existBook,
-      });
-    }
-  } catch (err) {
-    res.status(500).send({status: false, message: err.message,
-    });
-  }
-=======
     const updateReview = await reviewModel.findByIdAndUpdate({ _id: paramreview },{ $set: filteredData },{ new: true }).select({_id:1, bookId:1, reviewedBy:1, reviewedAt:1, rating:1, review:1});
    
     if (updateReview) {
@@ -262,7 +164,6 @@ const updateReview = async function(req, res) {
     }
   } catch (err) {
     return res.status(500).send({status: false,message: err.message});}
->>>>>>> eae4d00b5e17f0d7ffaa2a038323d6efa9cd55b4
 };
 
 //delete review
@@ -281,29 +182,6 @@ const deleteReview = async function(req, res) {
     const paramreview = req.params.reviewId;
     
     if (!isValidObject(paramreview)) {
-<<<<<<< HEAD
-      res.status(400).send({
-        status: false,
-        message: "review Id is not valid",
-      });
-    }
-    const existReview = await reviewModel.findOne({
-      _id: paramreview,
-      bookId:existBook._id,
-      isDeleted: false,
-    });
-    if (!existReview) {
-      return res.status(404).send({
-        status: false,
-        message: "No review found",
-      });
-    }
-
-    const delReview = await reviewModel.findByIdAndUpdate(
-      { _id: existReview._id },
-      { $set: { isDeleted: true } }
-    );
-=======
     return  res.status(400).send({status: false,message: "review Id is not valid"});}
 
     const existReview = await reviewModel.findOne({_id: paramreview,bookId:existBook._id,isDeleted: false,});
@@ -313,19 +191,12 @@ const deleteReview = async function(req, res) {
 
     const delReview = await reviewModel.findByIdAndUpdate({ _id: existReview._id },{ $set: { isDeleted: true } });
     
->>>>>>> eae4d00b5e17f0d7ffaa2a038323d6efa9cd55b4
     if (delReview) {
       const updateBookReview = await bookModel.findOneAndUpdate(
         { _id: delReview.bookId, isDeleted: false },{ $inc: { reviews: -1 } },{ new: true }
       );
-<<<<<<< HEAD
-      return res.status(200).send({ status: true,
-        message: "success",
-        data: updateBookReview });
-=======
 
       return res.status(200).send({ status: true,message: "successfully deleted",data: updateBookReview });
->>>>>>> eae4d00b5e17f0d7ffaa2a038323d6efa9cd55b4
     }
   } catch (err) {
     return res.status(500).send({status: false,message: err.message});
@@ -334,4 +205,4 @@ const deleteReview = async function(req, res) {
 
 module.exports.createReview = createReview;
 module.exports.updateReview = updateReview;
-module.exports.deleteReview = deleteReview;
+module.exports.deleteReview = deleteReview;  

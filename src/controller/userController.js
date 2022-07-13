@@ -155,7 +155,7 @@ const loginUser = async function (req, res) {
      //email and password check from db
      let user = await userModel.findOne({ email: userName, password: password });
      if (!user)
-         return res.status(401).send({ status: false, message: "credentials are not correct" });
+         return res.status(400).send({ status: false, message: "credentials are not correct" });
  
     
     // var d = new Date();

@@ -27,16 +27,10 @@ let authorization1=async function (req,res,next){
     try{
         let userId=req.body.userId
         const decodedToken=req.decodedToken
-<<<<<<< HEAD
-        let data = req.body
-        if (Object.keys(data).length == 0) {
-            return res.status(400).send({ status: false, msg: "Body should  be not Empty.. " })
-=======
 let data = req.body
          //check data is exist | key exist in data
          if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, msg: "Data is required to add a user" })
->>>>>>> eae4d00b5e17f0d7ffaa2a038323d6efa9cd55b4
         }
 
         if(!userId){
@@ -45,11 +39,7 @@ let data = req.body
         else if(mongoose.Types.ObjectId.isValid(userId) == false){
             return res.status(400).send({status:false, message:"userId is invalid"})
         }
-<<<<<<< HEAD
-        let userById = await userModel.findOne({_id:userId})
-=======
         let userById=await userModel.findOne({_id:userId,isDeleted:false})
->>>>>>> eae4d00b5e17f0d7ffaa2a038323d6efa9cd55b4
 
         if(!userById){
             return res.status(400).send({status:false, message:"user with this userId not found"})
@@ -58,7 +48,7 @@ let data = req.body
             return res.status(403).send({status:false,message:"you are Unauthorized for this"})
         }
         next();
-    }
+    } 
     catch(err){
         return res.status(500).send({status:false, message:err.message})
     }
