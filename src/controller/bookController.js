@@ -8,135 +8,131 @@ const ObjectId = mongoose.Types.ObjectId
 
 //CreateBooks
 const createBooks = async function (req, res) {
-    try {
-        let data = req.body
+  try {
+      let data = req.body
 
-        const { title, excerpt, userId, ISBN, category, subcategory,  releasedAt } = data; //destructure
+      const { title, excerpt, userId, ISBN, category, subcategory,  releasedAt } = data; //destructure
 
-        //check if the body is empty
-        if (Object.keys(data).length == 0) {
-            return res.status(400).send({ status: false, message: "Body should  be not Empty please enter some data to create book" })
+      //check if the body is empty
+      if (Object.keys(data).length == 0) {
+          return res.status(400).send({ status: false, message: "Body should  be not Empty please enter some data to create book" })
+      }
+
+      //check the title is empty
+      if(!title ||typeof title !=='string' || title.trim().length==0 )
+      {
+          return res.status(400).send({ status: false, message: "title is required and is of string type" })
+      }
+
+      //check the title be unique
+      let duplicateTitle = await bookModel.findOne({ title: title });
+       if (duplicateTitle) {
+          return res.status(400).send({ status: false, message: "This Title is Already Exist" });
+      }
+     //check the excerpt is empty
+      if(!excerpt ||typeof excerpt !=='string' || excerpt.trim().length==0 ){ 
+          return res.status(400).send({ status: false, message: "Excerpt field is mandatory" });
+        }
+      //check the userId is empty
+      if(!userId ||typeof userId !=='string' || userId.trim().length==0){ 
+          return res.status(400).send({ status: false, message: "userId field is mandatory" });
+        }
+      //check the ISBN is empty
+      if(!ISBN ||typeof ISBN !=='string' || ISBN.trim().length==0){ 
+          return res.status(400).send({ status: false, message: "ISBN field is mandatory" });
+        }
+      //check the uniqness of ISBN
+      let duplicateISBN = await bookModel.findOne({ ISBN: ISBN });
+        if (duplicateISBN) {
+           return res.status(400).send({ status: false, message: "This ISBN is Already Exist." });
+       }
+
+       //check the ISBN validation
+      if(!/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN)){
+      return res.status(400).send({status: false,message: "ISBN is not valid it contains only numeric digits and its length shout be 10 or 13",
+        });
+      }
+
+      //check the category is empty
+      if(!category ||typeof category !=='string' || category.trim().length==0){ 
+        return res.status(400).send({ status: false, message: "category field is mandatory" });
         }
 
-        //check the title is empty
-        if(!title ||typeof title !=='string' || title.trim().length==0 )
-        {
-            return res.status(400).send({ status: false, message: "title is required and is of string type" })
+        //check the subcategory is present
+        if (!subcategory) {
+          return res.status(400).send({ status: false, message: "subcategory is required" })
+        }
+    
+        //check the subcategory is an array
+        if (!Array.isArray(subcategory)) {
+          return res.status(400).send({ status: false, message: "Subcategory must be an array of String" })
+        }
+        if(subcategory.length === 0){
+          return res.status(400).send({ status: false, message: "can not be an empty array " })
+        }
+        let validSubcategory = true;
+    
+        const checkTypeofSubcategory = subcategory.map(x => {
+          if (typeof x != "string" || x.trim().length == 0) {
+            validSubcategory = false
+          }
+        })
+        if (validSubcategory == false) {
+          return res.status(400).send({ status: false, message: "Subcategory is not valid" })
+        }
+    
+        //check the releasedAt is present
+      if(!releasedAt ||typeof releasedAt !=='string' || releasedAt.trim().length==0){ 
+          return res.status(400).send({ status: false, message: "releasedAt field is mandatory" });
         }
 
-        //check the title be unique
-        let duplicateTitle = await bookModel.findOne({ title: title });
-         if (duplicateTitle) {
-            return res.status(400).send({ status: false, message: "This Title is Already Exist" });
-        }
+        //check the format of releasedAt
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(releasedAt)){
+          return res.status(400).send({ status: false, message: "Date is not valid" })
+      }
 
-        //check the excerpt is empty
-        if(!excerpt ||typeof excerpt !=='string' || excerpt.trim().length==0 ){ 
-            return res.status(400).send({ status: false, message: "Excerpt field is mandatory" });
-          }
+      let UserId = data.userId
 
-        //check the userId is empty
-        if(!userId ||typeof userId !=='string' || userId.trim().length==0){ 
-            return res.status(400).send({ status: false, message: "userId field is mandatory" });
-          }
+      let FindId = await userModel.findById(UserId)
 
-        //check the ISBN is empty
-        if(!ISBN ||typeof ISBN !=='string' || ISBN.trim().length==0){ 
-            return res.status(400).send({ status: false, message: "ISBN field is mandatory" });
-          }
+      if (!FindId) return res.status(400).send({ status: false, message: 'UserId does not exist' })
 
-        //check the uniqness of ISBN
-        let duplicateISBN = await bookModel.findOne({ ISBN: ISBN });
-          if (duplicateISBN) {
-             return res.status(400).send({ status: false, message: "This ISBN is Already Exist." });
+      //remove spaces
+      if(data.excerpt !== undefined){
+              data.excerpt = excerpt.trim().split(" ").filter(word=>word).join(" ")
          }
+     
+          data.title = title.trim().split(" ").filter(word=>word).join(" ")
+          data.category= category.trim().split(" ").filter(word=>word).join(" ")
+         
+    
+      //create book with data
+      const bookCreated = await bookModel.create(data)
 
-         //check the ISBN validation
-        if(!/^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/.test(ISBN)){
-        return res.status(400).send({status: false,message: "ISBN is not valid it contains only numeric digits and its length shout be 10 or 13",
-          });
-        }
+      //releasedAt formatting
+      const releasedAt1= new Date(data.releasedAt).toISOString().slice(0,10)
 
-        //check the category is empty
-        if(!category ||typeof category !=='string' || category.trim().length==0){ 
-          return res.status(400).send({ status: false, message: "category field is mandatory" });
-          }
+      let obj={
+        _id: bookCreated._id,
+        title: bookCreated.title,
+        excerpt: bookCreated. excerpt,
+        usedId:bookCreated.userId,
+        category: bookCreated.category,
+        subcategory: bookCreated.subcategory,
+        isDeleted: bookCreated.isDeleted,
+        reviews: bookCreated.reviews,
+        deletedAt: bookCreated.deletedAt,
+        releasedAt:releasedAt1,
+        createdAt:bookCreated.createdAt,
+        updatedAt:bookCreated.updatedAt
+      }
+    
+      return res.status(201).send({ status: true, message: 'Successs', data: obj })
 
-          //check the subcategory is present
-          if (!subcategory) {
-            return res.status(400).send({ status: false, message: "subcategory is required" })
-          }
-      
-          //check the subcategory is an array
-          if (!Array.isArray(subcategory)) {
-            return res.status(400).send({ status: false, message: "Subcategory must be an array of String" })
-          }
-          if(subcategory.length === 0){
-            return res.status(400).send({ status: false, message: "can not be an empty array " })
-          }
-          let validSubcategory = true;
-      
-          const checkTypeofSubcategory = subcategory.map(x => {
-            if (typeof x != "string" || x.trim().length == 0) {
-              validSubcategory = false
-            }
-          })
-          if (validSubcategory == false) {
-            return res.status(400).send({ status: false, message: "Subcategory is not valid" })
-          }
-      
-          //check the releasedAt is present
-        if(!releasedAt ||typeof releasedAt !=='string' || releasedAt.trim().length==0){ 
-            return res.status(400).send({ status: false, message: "releasedAt field is mandatory" });
-          }
-
-          //check the format of releasedAt
-          if(!/^\d{4}-\d{2}-\d{2}$/.test(releasedAt)){
-            return res.status(400).send({ status: false, message: "Date is not valid" })
-        }
-
-        let UserId = data.userId
-
-        let FindId = await userModel.findById(UserId)
-
-        if (!FindId) return res.status(400).send({ status: false, message: 'UserId does not exist' })
-
-        //remove spaces
-        if(data.excerpt !== undefined){
-                data.excerpt = excerpt.trim().split(" ").filter(word=>word).join(" ")
-           }
-       
-            data.title = title.toLowerCase().trim().split(" ").filter(word=>word).join(" ")
-            data.category= category.trim().split(" ").filter(word=>word).join(" ")
-           
-      
-        //create book with data
-        const bookCreated = await bookModel.create(data)
-
-        //releasedAt formatting
-        const releasedAt1= new Date(data.releasedAt).toISOString().slice(0,10)
-
-        let obj={
-          _id: bookCreated._id,
-          title: bookCreated.title,
-          excerpt: bookCreated. excerpt,
-          usedId:bookCreated.userId,
-          category: bookCreated.category,
-          subcategory: bookCreated.subcategory,
-          isDeleted: bookCreated.isDeleted,
-          reviews: bookCreated.reviews,
-          deletedAt: bookCreated.deletedAt,
-          releasedAt:releasedAt1,
-          createdAt:bookCreated.createdAt,
-          updatedAt:bookCreated.updatedAt
-        }
-      
-        return res.status(201).send({ status: true, message: 'Success', data: obj })
-
-    }
-    catch (err) {
-      return  res.status(500).send({ message: "Error", error: err.message })
-    }
+  }
+  catch (err) {
+    return  res.status(500).send({ message: "Error", error: err.message })
+  }
 }
 
 
