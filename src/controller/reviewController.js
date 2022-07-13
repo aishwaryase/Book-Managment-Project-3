@@ -205,4 +205,4 @@ const deleteReview = async function(req, res) {
 
 module.exports.createReview = createReview;
 module.exports.updateReview = updateReview;
-module.exports.deleteReview = deleteReview;  
+module.exports.deleteReview = deleteReview;
