@@ -1,7 +1,7 @@
 const userModel = require("../model/userModel");
 const jwt = require("jsonwebtoken");
  
-
+// ================================[Create User's]=======================================
 
 //create user details
 const createUser = async function (req, res) {
@@ -10,24 +10,20 @@ const createUser = async function (req, res) {
         let obj={}
         
         let { title, name, phone, email, password, address} = data //destructure
-        
-    
+            
         //check data is exist | key exist in data
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ status: false, message: "Data is required to add a user" })
         }
 
         //check title is present 
-       
-        if(!title ||typeof title !=='string' || title.trim().length==0 )
-        {
-            return res.status(400).send({ status: false, message: "title is required and is of string type" })
+        if(!title ||typeof title !=='string' || title.trim().length==0 ) {
+           return res.status(400).send({ status: false, message: "title is required and is of string type" })
         }
 
         //validate title enum
-        const isvalid=function(title){
-            return["Mr","Mrs","Miss"].indexOf(title)=== -1
-            
+        const isvalid = function(title){
+            return["Mr","Mrs","Miss"].indexOf(title) === -1
         }
 
         //check enum
@@ -36,16 +32,16 @@ const createUser = async function (req, res) {
         }
 
          //check name is present 
-         if(!name ||typeof name !=='string' || name.trim().length==0 )
-         {
+         if(!name ||typeof name !=='string' || name.trim().length==0 ){
             return res.status(400).send({ status: false, message: "Name is required and of string type only" })
         }
+            obj.data.name.trim().split(" ").filter(word=>word).join(" ")
 
         //validate name
         if (!/^([a-zA-Z. , ]){1,100}$/.test(name)) {
             return res.status(400).send({ status: false, message: `name contain only alphabets` })
-
         }
+
         //check phone is present
         if(!phone ||typeof phone !=='string' || phone.trim().length==0 ) {
             return res.status(400).send({ status: false, message: "user's phone  is required" })
@@ -55,6 +51,7 @@ const createUser = async function (req, res) {
         if (!/^([0|\+[0-9]{1,5})?([7-9][0-9]{9})$/.test(phone)) {
             return res.status(400).send({ status: false, message: "mobile phone is not valid" })
         }
+
          //check uniqueness of phone
          if (await userModel.findOne({ phone: phone }))
          return res.status(400).send({ message: "Phone already exist" })
@@ -65,14 +62,18 @@ const createUser = async function (req, res) {
         }
 
         //check uniqueness of email
-        if (await userModel.findOne({ email: email }))
-            return res.status(400).send({ message: "Email already exist" })
+        let checkEmail = await userModel.findOne({ email: email })
+        if(!checkEmail)
+        return res.status(400).send({ message: "Email already exist" })
 
+        // if (await userModel.findOne({ email: email }))
+        //     return res.status(400).send({ message: "Email already exist" })
         
         //validate email
         if (!/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email)) {
             return res.status(400).send({ status: false, message: `Email should be a valid email address` });
         }
+
         //check password is present
         if (!password ||typeof password !=='string' || password.trim().length==0) {
             return res.status(400).send({ status: false, message: "user's password  is required and of string type only" })
@@ -131,6 +132,7 @@ const createUser = async function (req, res) {
     }
 }
 
+// ================================[Login User]=======================================
 
 //login and token creation
 const loginUser = async function (req, res) {

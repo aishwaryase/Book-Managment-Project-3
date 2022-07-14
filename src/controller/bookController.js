@@ -2,9 +2,9 @@ const bookModel = require("../model/bookModel")
 const userModel = require("../model/userModel")
 const reviewModel = require("../model/reviewModel")
 const mongoose = require('mongoose')
+// const awsS3 = require("../aws-s3")
 
-
-
+// ================================[Create Books ]=======================================
 
 //CreateBooks
 const createBooks = async function (req, res) {
@@ -14,7 +14,7 @@ const createBooks = async function (req, res) {
       const { title, excerpt, userId, ISBN, category, subcategory,  releasedAt } = data; //destructure
 
       //check if the body is empty
-      if (Object.keys(data).length == 0) {
+      if (Object.keys(data).length === 0) {
           return res.status(400).send({ status: false, message: "Body should  be not Empty please enter some data to create book" })
       }
 
@@ -23,6 +23,7 @@ const createBooks = async function (req, res) {
       {
           return res.status(400).send({ status: false, message: "title is required and is of string type" })
       }
+      data.title = title.trim().split(" ").filter(word=>word).join(" ")
 
       //check the title be unique
       let duplicateTitle = await bookModel.findOne({ title: title });
@@ -33,6 +34,7 @@ const createBooks = async function (req, res) {
       if(!excerpt ||typeof excerpt !=='string' || excerpt.trim().length==0 ){ 
           return res.status(400).send({ status: false, message: "Excerpt field is mandatory" });
         }
+        data.excerpt = excerpt.trim().split(" ").filter(word=>word).join(" ")
       //check the userId is empty
       if(!userId ||typeof userId !=='string' || userId.trim().length==0){ 
           return res.status(400).send({ status: false, message: "userId field is mandatory" });
@@ -57,6 +59,7 @@ const createBooks = async function (req, res) {
       if(!category ||typeof category !=='string' || category.trim().length==0){ 
         return res.status(400).send({ status: false, message: "category field is mandatory" });
         }
+        data.category= category.trim().split(" ").filter(word=>word).join(" ")
 
         //check the subcategory is present
         if (!subcategory) {
@@ -97,22 +100,14 @@ const createBooks = async function (req, res) {
 
       if (!FindId) return res.status(400).send({ status: false, message: 'UserId does not exist' })
 
-      //remove spaces
-      if(data.excerpt !== undefined){
-              data.excerpt = excerpt.trim().split(" ").filter(word=>word).join(" ")
-         }
-     
-          data.title = title.trim().split(" ").filter(word=>word).join(" ")
-          data.category= category.trim().split(" ").filter(word=>word).join(" ")
-         
-    
+      
       //create book with data
       const bookCreated = await bookModel.create(data)
 
       //releasedAt formatting
-      const releasedAt1= new Date(data.releasedAt).toISOString().slice(0,10)
+      // const releasedAt1= new Date(data.releasedAt).toISOString().slice(0,10)
 
-      let obj={
+      let obj = {
         _id: bookCreated._id,
         title: bookCreated.title,
         excerpt: bookCreated. excerpt,
@@ -122,7 +117,7 @@ const createBooks = async function (req, res) {
         isDeleted: bookCreated.isDeleted,
         reviews: bookCreated.reviews,
         deletedAt: bookCreated.deletedAt,
-        releasedAt:releasedAt1,
+        releasedAt:releasedAt,
         createdAt:bookCreated.createdAt,
         updatedAt:bookCreated.updatedAt
       }
@@ -135,7 +130,7 @@ const createBooks = async function (req, res) {
   }
 }
 
-
+// ================================[Get Books by Filter]=======================================
 
 //Get All Books
 const getAllBooks = async function (req, res) {
@@ -200,6 +195,7 @@ const getAllBooks = async function (req, res) {
   }
 };
 
+// ================================[Get Books by Id]=======================================
 
 //get all books by Id
 const getAllBooksById = async function (req, res) {
@@ -236,13 +232,13 @@ const getAllBooksById = async function (req, res) {
       reviewsData: allRevies,
     };
 
-    return res.status(200).send({ status: true, Data: responData });
+    return res.status(200).send({ status: true, message: 'Books list', data: responData });
   } catch (err) {
     return res.status(500).send({ status: false, message: err.message });
   }
 }
 
-
+// ================================[Update Books by Id]=======================================
 //update book by id
 
 const updateBookDataById=async function (req,res) {
@@ -363,9 +359,7 @@ const updateBookDataById=async function (req,res) {
   }
 }
 
-
-
-
+// ================================[Delete Books by Id]=======================================
 
 //delete book by Id
 const deleteBookBYId = async function (req, res) {

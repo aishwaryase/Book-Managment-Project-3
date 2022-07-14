@@ -3,17 +3,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const route = require('./route/route.js');
 const mongoose = require('mongoose');
+// const multer = require('multer')
 
 
 const app = express();
 
-
 app.use(bodyParser.json());
-
 
   
 //Connecting Data-Base
-mongoose.connect("mongodb+srv://Abhilasha-93:jasta1234@cluster0.vl2c0ns.mongodb.net/group2Database?retryWrites=true&w=majority", {
+mongoose.connect("mongodb+srv://Aishwarya123:sg8eJZVpV9e3eEP3@cluster0.gf2pu4l.mongodb.net/group2Database", {
     useNewUrlParser: true
 })
     .then(() => console.log("MongoDb is connected"))

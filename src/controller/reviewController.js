@@ -25,6 +25,8 @@ const isValidType = function (value) {
   return true;
 };
 
+// ================================[Create Review's]=======================================
+
 //create review
 const createReview = async function(req, res)  {
   try {
@@ -90,7 +92,7 @@ const createReview = async function(req, res)  {
       const updateBookReview = await bookModel.findOneAndUpdate(
         { _id: createdreviews.bookId, isDeleted: false },{ $inc: { reviews: 1 } },{ new: true }).lean();
      
-      updateBookReview.responData=findCreRev
+      updateBookReview.reviewsData=findCreRev
       
       return res.status(201).send({status: true,message: "Success",data: updateBookReview});
     }
@@ -99,6 +101,7 @@ const createReview = async function(req, res)  {
   }
 };
 
+// ================================[Update Review's]=======================================
 
 //update review
 const updateReview = async function(req, res) {
@@ -166,13 +169,15 @@ const updateReview = async function(req, res) {
     return res.status(500).send({status: false,message: err.message});}
 };
 
+// ================================[Delete Review's]=======================================
+
 //delete review
 const deleteReview = async function(req, res) {
   try {
     const book = req.params.bookId;
     
     if (!isValidObject(book)) {
-    return   res.status(400).send({status: false,message: "Book Id is not valid"});}
+    return  res.status(400).send({status: false,message: "Book Id is not valid"});}
 
     const existBook = await bookModel.findOne({ _id: book, isDeleted: false });
     

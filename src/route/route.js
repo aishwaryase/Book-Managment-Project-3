@@ -4,22 +4,45 @@ const bookController = require("../controller/bookController")
 const userController = require("../controller/userController")
 const reviewController=require('../controller/reviewController')
 const middleware = require("../middleware/mid1")
+// const  aws  = require('aws-sdk')
+// const awsS3 = require("../aws-s3")
 
-//User Api's
-router.post("/register", userController.createUser)//create user
-router.post("/login", userController.loginUser)//login user
 
-//Book Api's
-router.post("/books",middleware.authentication,middleware.authorization1, bookController.createBooks)//create book
-router.get("/books",middleware.authentication, bookController.getAllBooks)//get book
-router.get("/books/:bookId",middleware.authentication, bookController.getAllBooksById)//get book by Id
-router.put("/books/:bookId",middleware.authentication,middleware.authorization2, bookController.updateBookDataById)// update book by id
-router.delete("/books/:bookId",middleware.authentication,middleware.authorization2, bookController.deleteBookBYId)//deleted book by Id
+//==========================={ User Api's }=========================================//
+// router.post("/write-file-aws", awsS3.awsFileUpload)
+//create user
+router.post("/register", userController.createUser)
 
-//Review Api's
-router.post("/books/:bookId/review", reviewController.createReview) //create review
-router.put('/books/:bookId/review/:reviewId', reviewController.updateReview) //update review
-router.delete('/books/:bookId/review/:reviewId', reviewController.deleteReview)//delete review
+//login user
+router.post("/login", userController.loginUser)
+
+//==========================={ Book Api's }==========================================//
+
+//create book
+router.post("/books",middleware.authentication,middleware.authorization1, bookController.createBooks)
+
+//get book
+router.get("/books",middleware.authentication, bookController.getAllBooks)
+
+//get book by Id
+router.get("/books/:bookId",middleware.authentication, bookController.getAllBooksById)
+
+// update book by id
+router.put("/books/:bookId",middleware.authentication,middleware.authorization2, bookController.updateBookDataById)
+
+//deleted book by Id
+router.delete("/books/:bookId",middleware.authentication,middleware.authorization2, bookController.deleteBookBYId)
+
+//=================================={ Review Api's }=====================================
+
+//create review
+router.post("/books/:bookId/review", reviewController.createReview) 
+
+//update review
+router.put('/books/:bookId/review/:reviewId', reviewController.updateReview) 
+
+//delete review
+router.delete('/books/:bookId/review/:reviewId', reviewController.deleteReview)
 
 
 module.exports = router  
