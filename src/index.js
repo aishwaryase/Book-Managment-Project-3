@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-app.use(bodyParser.json());
+app.use(bodyParser.json()); 
 
   
 //Connecting Data-Base
