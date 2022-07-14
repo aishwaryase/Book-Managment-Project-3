@@ -13,7 +13,8 @@ const authentication = async function (req,res,next){
 
         try{let decodedToken = jwt.verify(token,"ProjectBookMgmt"); 
        
-        req.decodedToken=decodedToken;}catch(err){
+        req.decodedToken=decodedToken;}
+        catch(err){
             return res.status(401).send({status:false,data: err.message, message:"token is invalid"})
         }
         next() 

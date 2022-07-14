@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const createUser = async function (req, res) {
     try {
         const data = req.body
+
         let obj={}
         
         let { title, name, phone, email, password, address} = data //destructure
@@ -35,7 +36,7 @@ const createUser = async function (req, res) {
          if(!name ||typeof name !=='string' || name.trim().length==0 ){
             return res.status(400).send({ status: false, message: "Name is required and of string type only" })
         }
-            obj.data.name.trim().split(" ").filter(word=>word).join(" ")
+            
 
         //validate name
         if (!/^([a-zA-Z. , ]){1,100}$/.test(name)) {
@@ -61,13 +62,8 @@ const createUser = async function (req, res) {
             return res.status(400).send({ status: false, message: "user's email  is required and of string type only" })
         }
 
-        //check uniqueness of email
-        let checkEmail = await userModel.findOne({ email: email })
-        if(!checkEmail)
-        return res.status(400).send({ message: "Email already exist" })
-
-        // if (await userModel.findOne({ email: email }))
-        //     return res.status(400).send({ message: "Email already exist" })
+        if (await userModel.findOne({ email: email }))
+            return res.status(400).send({ message: "Email already exist" })
         
         //validate email
         if (!/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email)) {
@@ -83,6 +79,7 @@ const createUser = async function (req, res) {
         if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$/.test(password)) {
             return res.status(400).send({ status: false, message: `password shoud be minimum 8 to maximum 15 characters which contain at least one numeric digit, one uppercase and one lowercase letter` })
         }  
+
 
         //address validation
         if(address !== undefined){

@@ -73,16 +73,17 @@ const createBooks = async function (req, res) {
         if(subcategory.length === 0){
           return res.status(400).send({ status: false, message: "can not be an empty array " })
         }
-        let validSubcategory = true;
+        // let validSubcategory = true;
     
-        const checkTypeofSubcategory = subcategory.map(x => {
-          if (typeof x != "string" || x.trim().length == 0) {
-            validSubcategory = false
-          }
-        })
-        if (validSubcategory == false) {
-          return res.status(400).send({ status: false, message: "Subcategory is not valid" })
-        }
+        // const checkTypeofSubcategory = subcategory.map(x => {
+        //   if (typeof x != "string" || x.trim().length == 0) {
+        //     validSubcategory = false
+        //   }})
+
+        
+        // if (validSubcategory == false) {
+        //   return res.status(400).send({ status: false, message: "Subcategory is not valid" })
+        // }
     
         //check the releasedAt is present
       if(!releasedAt ||typeof releasedAt !=='string' || releasedAt.trim().length==0){ 
@@ -137,8 +138,6 @@ const getAllBooks = async function (req, res) {
   try {
     let field = req.query;
     const { userId, category, subcategory } = field //destructure
-
-    //check userId
       
       //check the userId is valid
       if (userId !== undefined) {
@@ -152,16 +151,16 @@ const getAllBooks = async function (req, res) {
   
       //check the category value is present
     
-    if (category !== undefined) {
-      if (category.length===0){
-        return res.status(400).send({ status: false, message: "category should  be present" })
-        }
-    }
-
+      if (category !== undefined) {
+        if (category.length === 0){
+          return res.status(400).send({ status: false, message: "Category should  be present" })
+          }
+      }
+  
       //check the subcategory value is present
    
     if (subcategory !== undefined) {
-      if (subcategory.length===0){
+      if (subcategory.length === 0){
         return res.status(400).send({ status: false, message: "subcategory should  be present" })
         }
     }
@@ -253,14 +252,14 @@ const updateBookDataById=async function (req,res) {
       });
       }
 
-      const existBook=await bookModel.findOne({_id:paramsBookId,isDeleted:false})
+      const existBook = await bookModel.findOne({_id:paramsBookId,isDeleted:false})
       if(!existBook){
         return res.status(404).send({
           status: false,
           message: "No book found with given Id",
         });
       } 
-      const requestBody=req.body
+      const requestBody = req.body
 
       if(Object.keys(requestBody).length===0){
         return res.status(400).send({
@@ -268,7 +267,7 @@ const updateBookDataById=async function (req,res) {
           message: "Update request rejected no data found in body",
         });
       }
-      const{title,excerpt,releasedAt,ISBN}=requestBody
+      const{title,excerpt,releasedAt,ISBN} = requestBody
       
       if (title !== undefined) {
         if (typeof title!=='string'||title.trim().length===0) {
@@ -350,9 +349,7 @@ const updateBookDataById=async function (req,res) {
       updateBook.reviewsData=allRevies
    
 
-      return res.status(200).send({status: true,
-        message: 'Success',
-        data:updateBook})
+      return res.status(200).send({status: true, message: 'Success',data:updateBook})
 
   }catch(err){
       return res.status(500).send({ status:false, message: err.message })

@@ -45,7 +45,8 @@ const createReview = async function(req, res)  {
 
     filteredData["bookId"] = existBook._id.toString();
 
-    requestBody = req.body;
+   let requestBody = req.body;
+
     if (!isValidBody(requestBody)) {
       return res.status(400).send({status: false,message: "required some mandatory data"});
     }
@@ -109,6 +110,7 @@ const updateReview = async function(req, res) {
     const filteredData = {};
 
     const book = req.params.bookId;
+
     if (!isValidObject(book)) {
       return res.status(400).send({status: false,message: "Book Id is not valid"});}
 
@@ -117,6 +119,7 @@ const updateReview = async function(req, res) {
       return res.status(404).send({status: false,message: "No data found"});}
 
     const paramreview = req.params.reviewId;
+
     if (!isValidObject(paramreview)) {
      return  res.status(400).send({status: false,message: "review Id is not valid"});}
 
@@ -126,6 +129,7 @@ const updateReview = async function(req, res) {
     return res.status(404).send({status: false,message: "No data found"});}
 
     const requestBody = req.body;
+
     if (!isValidBody(requestBody)) {
     return res.status(400).send({status: false,message: "required some mandatory data"});}
 
@@ -161,7 +165,7 @@ const updateReview = async function(req, res) {
     const updateReview = await reviewModel.findByIdAndUpdate({ _id: paramreview },{ $set: filteredData },{ new: true }).select({_id:1, bookId:1, reviewedBy:1, reviewedAt:1, rating:1, review:1});
    
     if (updateReview) {
-      existBook.responData=updateReview
+      existBook.reviewData=updateReview
        
       return res.status(200).send({status: true,message: "Success",data: existBook});
     }
