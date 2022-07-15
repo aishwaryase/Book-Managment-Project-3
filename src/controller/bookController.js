@@ -2,7 +2,64 @@ const bookModel = require("../model/bookModel")
 const userModel = require("../model/userModel")
 const reviewModel = require("../model/reviewModel")
 const mongoose = require('mongoose')
-// const awsS3 = require("../aws-s3")
+
+const aws= require("aws-sdk")
+
+
+aws.config.update({
+    accessKeyId: "AKIAY3L35MCRVFM24Q7U",
+    secretAccessKey: "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",
+    region: "ap-south-1"
+})
+
+
+let uploadFile = async (file) => {
+   return new Promise( function (resolve, reject) {
+    // this function will upload file to aws and return the link
+    let s3= new aws.S3({apiVersion: '2006-03-01'}); // we will be using the s3 service of aws
+
+    var uploadParams= {
+        ACL: "public-read",
+        Bucket: "classroom-training-bucket",  //HERE
+        Key: "abc/" + file.originalname, //HERE 
+        Body: file.buffer
+    }
+
+
+    s3.upload( uploadParams, function (err, data) {
+        if (err) {
+            return reject({"error": err})
+        }
+        // console.log(data)
+        console.log("file uploaded succesfully")
+        return resolve(data.Location)
+    })
+
+    // let data= await s3.upload( uploadParams)
+    // if( data) return data.Location
+    // else return "there is an error"
+
+   })
+}
+
+
+// ==> POST api : to generate bookCover URL
+
+const awsFileUpload = async function (req, res) {
+    try {
+        let files = req.files
+        if(!files || files.length === 0) return res.status(400).send({ status: false, message: "No cover image found." })
+            //upload to s3 and get the uploaded link
+        let bookCoverURL= await uploadFile( files[0] )
+        return res.status(201).send({ status: true, message: 'Success', data: bookCoverURL })
+    } catch (err) {
+        return res.status(500).send({ status: false, message: err.message })
+    }
+}
+
+module.exports.awsFileUpload = awsFileUpload
+
+
 
 // ================================[Create Books ]=======================================
 
@@ -101,29 +158,28 @@ const createBooks = async function (req, res) {
 
       if (!FindId) return res.status(400).send({ status: false, message: 'UserId does not exist' })
 
-      
       //create book with data
       const bookCreated = await bookModel.create(data)
 
       //releasedAt formatting
       // const releasedAt1= new Date(data.releasedAt).toISOString().slice(0,10)
 
-      let obj = {
-        _id: bookCreated._id,
-        title: bookCreated.title,
-        excerpt: bookCreated. excerpt,
-        usedId:bookCreated.userId,
-        category: bookCreated.category,
-        subcategory: bookCreated.subcategory,
-        isDeleted: bookCreated.isDeleted,
-        reviews: bookCreated.reviews,
-        deletedAt: bookCreated.deletedAt,
-        releasedAt:releasedAt,
-        createdAt:bookCreated.createdAt,
-        updatedAt:bookCreated.updatedAt
-      }
+      // let obj = {
+      //   _id: bookCreated._id,
+      //   title: bookCreated.title,
+      //   excerpt: bookCreated. excerpt,
+      //   usedId:bookCreated.userId,
+      //   category: bookCreated.category,
+      //   subcategory: bookCreated.subcategory,
+      //   isDeleted: bookCreated.isDeleted,
+      //   reviews: bookCreated.reviews,
+      //   deletedAt: bookCreated.deletedAt,
+      //   releasedAt:releasedAt,
+      //   createdAt:bookCreated.createdAt,
+      //   updatedAt:bookCreated.updatedAt
+      // }
     
-      return res.status(201).send({ status: true, message: 'Successs', data: obj })
+      return res.status(201).send({ status: true, message: 'Successs', data: bookCreated })
 
   }
   catch (err) {
